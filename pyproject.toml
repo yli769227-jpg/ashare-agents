@@ -1,0 +1,32 @@
+[project]
+name = "ashare-agents"
+version = "0.0.1"
+description = "A-share agent orchestration layer over ashare-mcp (LangGraph multi-role debate, TradingAgents-style)."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "yli769227-jpg" }]
+dependencies = [
+    "ashare-mcp @ file:///Users/zhangyida/projects/ashare-mcp",
+    "langchain>=0.3.0",
+    "langchain-openai>=0.2.0",
+    "langgraph>=0.2.0",
+    "pydantic>=2.7",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+# Needed because we reference ashare-mcp via a local file:// path above.
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ashare_agents"]
