@@ -21,6 +21,7 @@ try:
 except ImportError:
     pass
 
+from ashare_agents.analysts import FundamentalsAnalyst
 from ashare_agents.orchestrator import run
 
 logging.basicConfig(level=logging.INFO)
@@ -32,7 +33,7 @@ def main() -> int:
     ap.add_argument("--years", type=int, default=5, help="History window (default 5)")
     args = ap.parse_args()
 
-    state = run(args.ticker)
+    state = run(args.ticker, analyst=FundamentalsAnalyst(years=args.years))
     err = state.get("error")
     if err:
         print(f"ERROR: {err}", file=sys.stderr)

@@ -77,6 +77,33 @@ def test_orchestrator_fundamentals_happy_path(monkeypatch):
     # at least one risk bullet
     assert isinstance(view.key_risks, list) and len(view.key_risks) >= 1
     assert isinstance(view.data_quality_note, str) and view.data_quality_note
+    # The fixture history carries a "突变上升" anomaly. The prompt must keep the
+    # Chinese text un-escaped (ensure_ascii=False) so FakeLLM's anomaly branch
+    # fires and emits an anomaly risk bullet.
+    assert any("anomal" in r.lower() for r in view.key_risks), (
+        f"expected an anomaly-related risk bullet, got {view.key_risks!r}"
+    )
+
+
+def test_analyst_passes_years_to_history_fn(monkeypatch):
+    """Non-default years must be forwarded to the history fetch function."""
+    monkeypatch.setenv("ASHARE_AGENTS_FAKE_LLM", "1")
+
+    received: dict = {}
+
+    def _recording_history(stock_code: str, years: int = 5):
+        received["stock_code"] = stock_code
+        received["years"] = years
+        return _fake_history(stock_code, years)
+
+    analyst = FundamentalsAnalyst(
+        llm=FakeLLM(default_ticker="SZ000001"),
+        history_fn=_recording_history,
+        years=3,
+    )
+    out = run("000001", analyst=analyst)
+    assert out.get("fundamentals") is not None
+    assert received["years"] == 3, f"history_fn got years={received.get('years')!r}, expected 3"
 
 
 def test_orchestrator_handles_history_failure(monkeypatch):

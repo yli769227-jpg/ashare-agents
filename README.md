@@ -1,7 +1,9 @@
 # ashare-agents
 
+[![tests](https://github.com/yli769227-jpg/ashare-agents/actions/workflows/test.yml/badge.svg)](https://github.com/yli769227-jpg/ashare-agents/actions/workflows/test.yml)
+
 **A-share agent orchestration layer.** TradingAgents-style multi-role debate
-graph that consumes the [`ashare-mcp`](../ashare-mcp/) toolset.
+graph that consumes the [`ashare-mcp`](https://github.com/yli769227-jpg/ashare-mcp) toolset.
 
 > **This repo does NOT reimplement what `ashare-mcp` already does.** Data
 > fetch, cross-check, peer compare, history time-series, document parsing —
@@ -50,10 +52,17 @@ parity implementation today.
 ```bash
 cd ashare-agents
 python -m venv .venv && source .venv/bin/activate
-pip install -e .
+pip install -e .      # pulls ashare-mcp from GitHub (git URL dependency)
 cp .env.example .env  # then fill OPENAI_API_KEY if you want real LLM calls
 pytest tests/         # offline test uses fake LLM
 python examples/run_fundamentals.py 000001
+```
+
+Local development against a sibling checkout of
+[`ashare-mcp`](https://github.com/yli769227-jpg/ashare-mcp):
+
+```bash
+pip install -e ../ashare-mcp -e .
 ```
 
 ## Why split it out?

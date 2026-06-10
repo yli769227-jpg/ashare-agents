@@ -268,7 +268,9 @@ class FundamentalsAnalyst:
             trend_cfo=_trend("NETCASH_OPERATE"),
             cagr_revenue=_cagr_str("TOTAL_OPERATE_INCOME"),
             cagr_profit=_cagr_str("PARENT_NETPROFIT"),
-            anomalies=json.dumps(history.get("anomalies") or []),
+            # ensure_ascii=False: the prompt is consumed by an LLM, keep Chinese
+            # text (e.g. anomaly notes like "突变上升") readable instead of \uXXXX.
+            anomalies=json.dumps(history.get("anomalies") or [], ensure_ascii=False),
             fallbacks=json.dumps(history.get("fallbacks") or {}),
         )
 

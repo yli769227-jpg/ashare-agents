@@ -7,7 +7,7 @@ requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "yli769227-jpg" }]
 dependencies = [
-    "ashare-mcp @ file:///Users/zhangyida/projects/ashare-mcp",
+    "ashare-mcp @ git+https://github.com/yli769227-jpg/ashare-mcp.git",
     "langchain>=0.3.0",
     "langchain-openai>=0.2.0",
     "langgraph>=0.2.0",
@@ -25,7 +25,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.metadata]
-# Needed because we reference ashare-mcp via a local file:// path above.
+# Needed because we reference ashare-mcp via a direct git URL above.
 allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
