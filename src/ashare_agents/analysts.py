@@ -26,17 +26,11 @@ from typing import Any, Dict, List, Literal, Optional, Protocol
 
 from pydantic import BaseModel, Field
 
-logger = logging.getLogger("ashare_agents")
-if not logger.handlers:
-    # Module-level default: stderr, INFO. Caller can reconfigure.
-    h = logging.StreamHandler()
-    h.setFormatter(logging.Formatter(
-        "[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    ))
-    logger.addHandler(h)
-    logger.setLevel(logging.INFO)
-    logger.propagate = False
+# Library best practice: do NOT attach handlers or configure levels here.
+# A library should never touch the root logger or add handlers — that is the
+# application's job (see examples/run_fundamentals.py, which calls
+# logging.basicConfig). We only obtain a module-scoped logger.
+logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
@@ -244,6 +238,15 @@ class FundamentalsAnalyst:
 
     @staticmethod
     def _render_prompt(ticker: str, history: Dict[str, Any]) -> str:
+        # Indirect prompt-injection note: the fields below (company_name,
+        # industry, anomaly notes, etc.) are concatenated into the LLM prompt
+        # without sanitization. This is acceptable here because the data
+        # originates from 东方财富 financial-report endpoints via ashare-mcp — a
+        # trusted, structured source. If a future data source is untrusted
+        # (e.g. free-form news, user input, scraped text), add injection
+        # defenses (delimiter fencing / instruction-stripping) at this seam.
+        # We deliberately avoid heavy escaping so legitimate Chinese text
+        # (company names, anomaly notes) stays readable for the LLM.
         series = history.get("series") or {}
         stats = history.get("stats") or {}
         cagr = history.get("cagr") or {}
